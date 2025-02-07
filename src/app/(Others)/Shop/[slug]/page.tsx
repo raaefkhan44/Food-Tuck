@@ -84,7 +84,8 @@ export default function SingleProductPage() {
     };
 
     fetchProductData();
-  }, [id]);
+  } ,[id]
+  );
 
 
 

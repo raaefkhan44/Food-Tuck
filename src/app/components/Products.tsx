@@ -47,7 +47,7 @@ const Products = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [error]);
 
   if (loading) {
     return (

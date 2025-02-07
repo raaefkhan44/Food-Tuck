@@ -1,207 +1,374 @@
 "use client";
-import MainBreadcum from "@/app/components/MainBreadCrum";
-import Link from "next/link";
-import { useState } from "react";
 import Image from "next/image";
-import { useAppSelector } from "../../../../hooks/redux";
+import { urlFor } from "@/sanity/lib/image";
+import { useEffect, useState } from "react";
+import { client } from "@/sanity/lib/client";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { getCart } from "../../../../redux/cartSlice";
 import { Dhill } from "../../../../types/Product";
-import { urlFor } from "@/sanity/lib/image";
+import { useAppSelector } from "../../../../hooks/redux";
 
-const CheckoutPage = () => {
-  const [billingSameAsShipping, setBillingSameAsShipping] = useState(true);
-  const cartSelector = useAppSelector(getCart)
+export default function Checkout() {
+  const productCart = useAppSelector(getCart);
   let totalPrice = 0;
-  cartSelector.forEach((item: Dhill) => {
+  productCart.forEach((item: Dhill) => {
     totalPrice += item.price * item.quantity;
-  })
-  return (
-    <>
-      <MainBreadcum name='Checkout Page' pageName='CheckOut' />
+  });
 
-      <div className="min-h-screen bg-gray-100 py-10">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="flex flex-col lg:flex-row justify-between space-y-10 lg:space-y-0 lg:space-x-8">
-            {/* Shipping Address */}
-            <div className="flex-1 bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-lg font-semibold mb-4">Shipping Address</h2>
-              <form className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      First name
-                    </label>
-                    <input
-                      type="text"
-                      className="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
-                      placeholder="First name"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Last name
-                    </label>
-                    <input
-                      type="text"
-                      className="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
-                      placeholder="Last name"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      className="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
-                      placeholder="Email"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Phone number
-                    </label>
-                    <input
-                      type="tel"
-                      className="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
-                      placeholder="Phone number"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Company
-                    </label>
-                    <input
-                      type="text"
-                      className="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
-                      placeholder="Company"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Country
-                    </label>
-                    <select className="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500">
-                      <option>Choose country</option>
-                      <option>USA</option>
-                      <option>Canada</option>
-                      <option>UK</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      City
-                    </label>
-                    <select className="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500">
-                      <option>Choose city</option>
-                      <option>New York</option>
-                      <option>Toronto</option>
-                      <option>London</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Zip code
-                    </label>
-                    <input
-                      type="text"
-                      className="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
-                      placeholder="Zip code"
-                    />
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Address 1
-                    </label>
-                    <input
-                      type="text"
-                      className="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
-                      placeholder="Address 1"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Address 2
-                    </label>
-                    <input
-                      type="text"
-                      className="mt-1 block w-full p-2 border border-gray-300 rounded-lg focus:ring-orange-500 focus:border-orange-500"
-                      placeholder="Address 2"
-                    />
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <label className="flex items-center space-x-2 text-sm">
-                    <input
-                      type="checkbox"
-                      className="h-4 w-4 text-orange-500 border-gray-300 rounded"
-                      checked={billingSameAsShipping}
-                      onChange={() => setBillingSameAsShipping(!billingSameAsShipping)}
-                    />
-                    <span>Same as shipping address</span>
+  const [cartItems, setCartItems] = useState<Dhill[]>([]);
+  const [discount, setDiscount] = useState<number>(0);
+  const [formValues, setFormValues] = useState({
+    firstName: "",
+    lastName: "",
+    address: "",
+    city: "",
+    zipCode: "",
+    phone: "",
+    email: "",
+  });
+
+  const [formErrors, setFormErrors] = useState({
+    firstName: false,
+    lastName: false,
+    address: false,
+    city: false,
+    zipCode: false,
+    phone: false,
+    email: false,
+  });
+
+  useEffect(() => {
+    setCartItems(productCart);
+    const appliedDiscount = localStorage.getItem("appliedDiscount");
+    if (appliedDiscount) {
+      setDiscount(Number(appliedDiscount));
+    }
+  }, []);
+
+  const subtotal = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
+  const total = Math.max(subtotal - discount, 0);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormValues({
+      ...formValues,
+      [e.target.id]: e.target.value,
+    });
+  };
+
+  const validateForm = () => {
+    const errors = {
+      firstName: !formValues.firstName,
+      lastName: !formValues.lastName,
+      address: !formValues.address,
+      city: !formValues.city,
+      zipCode: !formValues.zipCode,
+      phone: !formValues.phone,
+      email: !formValues.email,
+    };
+    setFormErrors(errors);
+    return Object.values(errors).every((error) => !error);
+  };
+
+  const handlePlaceOrder = async () => {
+    if (!validateForm()) {
+      toast.error("Please fill out all required fields correctly.", {
+        position: "top-center",
+      });
+      return;
+    }
+
+    const orderData = {
+      _type: "order",
+      firstName: formValues.firstName,
+      lastName: formValues.lastName,
+      address: formValues.address,
+      city: formValues.city,
+      zipCode: formValues.zipCode,
+      phone: formValues.phone,
+      email: formValues.email,
+      cartItems: cartItems.map((item) => ({
+        _type: "reference",
+        _ref: item._id,
+      })),
+      total: total,
+      orderDate: new Date().toISOString(),
+    };
+
+    try {
+      await client.create(orderData);
+      localStorage.removeItem("appliedDiscount");
+      toast.success("Order placed successfully!", {
+        position: "top-center",
+      });
+    } catch (error) {
+      console.error("Error creating order", error);
+      toast.error("Failed to place order. Please try again.", {
+        position: "top-center",
+      });
+    }
+
+
+    try {
+      await client.create(orderData);
+      localStorage.removeItem("appliedDiscount");
+      toast.success("Order placed successfully! A confirmation email has been sent.", {
+        position: "top-center",
+      });
+
+      // Simulate email notification (Replace with actual email sending logic)
+      console.log("Order confirmation email sent to", formValues.email);
+    } catch (error) {
+      console.error("Error creating order", error);
+      toast.error("Failed to place order. Please try again.", {
+        position: "top-center",
+      });
+    }
+  };
+
+  return (
+    <div>
+      {/* ToastContainer for Notifications */}
+      <ToastContainer position="top-center" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+
+      routeros
+
+      Copy
+      <div className="flex justify-end items-center mr-6 gap-7">
+        <p>000 800 100 9538</p>
+        <Image src="/message-01.png" alt="Message" width={20} height={20} />
+        <Image src="/box.png" alt="Box" width={20} height={20} />
+      </div>
+      <div className="flex lg:flex-row flex-col items-start mt-10 gap-10 mx-auto bg-white p-6">
+        <div className="mx-auto max-w-md mt-10">
+          <div className="min-h-screen flex items-center justify-center">
+            {/* Billing Form */}
+            <div className="bg-white border rounded-lg p-6 space-y-6 shadow-lg">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                Billing Information
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {/* First Name */}
+                <div>
+                  <label
+                    htmlFor="firstName"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    First Name
                   </label>
+                  <input
+                    id="firstName"
+                    placeholder="Enter your first name"
+                    value={formValues.firstName}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
+                  />
+                  {formErrors.firstName && (
+                    <p className="text-sm text-red-500 mt-1">
+                      First name is required.
+                    </p>
+                  )}
                 </div>
-              </form>
+
+                {/* Last Name */}
+                <div>
+                  <label
+                    htmlFor="lastName"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Last Name
+                  </label>
+                  <input
+                    id="lastName"
+                    placeholder="Enter your last name"
+                    value={formValues.lastName}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
+                  />
+                  {formErrors.lastName && (
+                    <p className="text-sm text-red-500 mt-1">
+                      Last name is required.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Address */}
+              <div>
+                <label
+                  htmlFor="address"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Address
+                </label>
+                <input
+                  id="address"
+                  placeholder="Enter your address"
+                  value={formValues.address}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
+                />
+                {formErrors.address && (
+                  <p className="text-sm text-red-500 mt-1">
+                    Address is required.
+                  </p>
+                )}
+              </div>
+
+              {/* City */}
+              <div>
+                <label
+                  htmlFor="city"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  City
+                </label>
+                <input
+                  id="city"
+                  placeholder="Enter your city"
+                  value={formValues.city}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
+                />
+                {formErrors.city && (
+                  <p className="text-sm text-red-500 mt-1">City is required.</p>
+                )}
+              </div>
+
+              {/* Zip Code */}
+              <div>
+                <label
+                  htmlFor="zipCode"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Zip Code
+                </label>
+                <input
+                  id="zipCode"
+                  placeholder="Enter your zip code"
+                  value={formValues.zipCode}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
+                />
+                {formErrors.zipCode && (
+                  <p className="text-sm text-red-500 mt-1">
+                    Zip Code is required.
+                  </p>
+                )}
+              </div>
+
+              {/* Phone */}
+              <div>
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Phone
+                </label>
+                <input
+                  id="phone"
+                  placeholder="Enter your phone number"
+                  value={formValues.phone}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
+                />
+                {formErrors.phone && (
+                  <p className="text-sm text-red-500 mt-1">Phone is required.</p>
+                )}
+              </div>
+
+              {/* Email */}
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Email
+                </label>
+                <input
+                  id="email"
+                  placeholder="Enter your email address"
+                  value={formValues.email}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
+                />
+                {formErrors.email && (
+                  <p className="text-sm text-red-500 mt-1">Email is required.</p>
+                )}
+              </div>
+
+              {/* Place Order Button */}
+              <button
+                className="w-full h-12 bg-black hover:bg-gray-800 text-white font-semibold rounded-lg transition-all transform hover:scale-105 active:scale-95"
+                onClick={handlePlaceOrder}
+              >
+                Place Order
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Order Summary Section */}
+        <div className="flex justify-center items-center mx-auto">
+          <div className="w-full max-w-md p-6">
+            <h2 className="text-xl font-semibold mb-6">Order Summary</h2>
+
+            {/* Subtotal Section */}
+            <div className="flex justify-between items-center mb-2">
+              <p className="text-gray-600">Subtotal</p>
+              <p className="font-medium">${totalPrice}</p>
             </div>
 
-            {/* Order Summary */}
-            <div className="w-full lg:w-1/3 bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
-              <div className="space-y-4">
-                {cartSelector.map((product: Dhill) => (
-                  <div key={product._id} className="flex items-center space-x-4">
-                    {product.image && (
-                    <Image
-                      src={urlFor(product.image).url()}
-                      alt={product.name}
-                      width={200}
-                      height={200}
-                      className="w-16 h-16 rounded object-cover"
-                    />
-                  )}
-                    <div>
-                      <p className="font-medium">{product.name}</p>
-                      <p className="text-sm text-gray-500">{product.quantity} x ${product.price}</p>
+            {/* Shipping Section */}
+            <div className="flex justify-between items-center mb-2">
+              <p className="text-gray-600">Delivery/Shipping</p>
+              <p className="font-medium">Free</p>
+            </div>
+
+            {/* Total Section */}
+            <div className="flex justify-between items-center border-t border-gray-200 pt-4 mb-4">
+              <p className="text-lg font-medium">Total</p>
+              <p className="text-lg font-bold">${totalPrice}</p>
+            </div>
+            <p className="text-sm text-gray-500 mb-6">
+              The total reflects the price of your order, including all duties
+              and taxes
+            </p>
+
+            {/* Delivery Information */}
+            <h3 className="font-semibold text-gray-800 mb-4">
+              Arrives Mon, 27 Mar - Wed, 12 Apr
+            </h3>
+
+            {/* Items Section */}
+            <div className="mb-4">
+              <div>
+                {productCart.map((item: Dhill) => (
+                  <div className="flex items-start mb-4" key={item._id}>
+                    {item.image && (
+                      <Image
+                        src={urlFor(item.image).url()}
+                        alt="Nike Dri-FIT Shirt"
+                        width={208}
+                        height={208}
+                        className="w-20 h-20 object-cover rounded"
+                      />
+                    )}
+                    <div className="ml-4">
+                      <p className="font-medium">{item.name}</p>
+                      <p className="text-sm text-gray-500">Qty {item.quantity}</p>
+                      <p className="text-sm font-medium mt-2">${item.price}</p>
                     </div>
                   </div>
                 ))}
-              </div>
-              <div className="border-t border-gray-300 mt-4 pt-4 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Subtotal</span>
-                  <span>${totalPrice}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Shipping</span>
-                  <span>$00</span>
-                </div>
-                <div className="flex justify-between font-semibold">
-                  <span>Total</span>
-                  <span>${totalPrice}</span>
-                </div>
-              </div>
-              <div className="mt-6 space-y-4">
-                <button className="w-full bg-orange-500 text-white py-2 rounded-lg shadow hover:bg-orange-600">
-                  Place an order →
-                </button>
-                <span className="block h-0"></span> {/* Add spacing here */}
-                <Link href='/Cart'>
-                  <button className="w-full bg-gray-200 text-gray-700 py-2 rounded-lg shadow hover:bg-gray-300">
-                    Back to cart
-                  </button>
-                </Link>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </>
-
+    </div>
   );
-};
-
-export default CheckoutPage;
+}

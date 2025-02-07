@@ -16,12 +16,12 @@ export default function Home() {
       <main>
         <Hero />
         <ImageGrid />
-
+    <div className="bg-black">
         <Menucard />
-
         <OurChef />
 
         <Testimonials />
+        </div>
 
 
 
