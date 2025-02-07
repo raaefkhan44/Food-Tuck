@@ -41,7 +41,7 @@ export default function Header() {
         <div className="flex justify-center mx-auto">
           <Link href="/">
             <h1 className="text-2xl font-bold text-[#FF9F0D]">
-              Food<span className="text-white">luck</span>
+              Food<span className="text-white">tuck</span>
             </h1>
           </Link>
         </div>
