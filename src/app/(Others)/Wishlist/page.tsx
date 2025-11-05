@@ -27,7 +27,7 @@ export default function Wishlist() {
             </h1>
         </div>
     
-            <div className="grid grid-cols-3 gap-4 max-md:grid-cols-2 max-sm:grid-cols-1">
+            <div className="grid grid-cols-4 gap-8 max-md:grid-cols-2 max-sm:grid-cols-1">
                 {likeSelector.map((product:Dhill, index:number) => (
                     <Link href={`/Shop/${product.slug.current}`} className="relative group" key={index}>
                         <div className="border border-gray-200 rounded cursor-pointer overflow-hidden">
@@ -35,7 +35,7 @@ export default function Wishlist() {
                                 <Image
                                     src={urlFor(product.image).url()}
                                     alt={product.name}
-                                    height={267}
+                                    height={267}    
                                     width={312}
                                     className="w-full h-[267px] object-cover"
                                 />
@@ -49,7 +49,7 @@ export default function Wishlist() {
                                         In Stock
                                     </span>
                                 ) : (
-                                    <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
+                                       <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
                                         Out of Stock
                                     </span>
                                 )}
