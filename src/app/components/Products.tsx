@@ -4,7 +4,7 @@ import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaShoppingCart, FaHeart, FaShareAlt, FaRedo } from "react-icons/fa";
 import { Dhill } from "../../../types/Product";
 import { addToCart, likeProduct } from "../../../redux/cartSlice";
